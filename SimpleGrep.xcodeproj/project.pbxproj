@@ -13,6 +13,10 @@
 		5F40D60815057F950080B065 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 5F40D60615057F950080B065 /* Credits.rtf */; };
 		5F40D60B15057F950080B065 /* SGRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D60A15057F950080B065 /* SGRAppDelegate.m */; };
 		5F40D60E15057F950080B065 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F40D60C15057F950080B065 /* MainMenu.xib */; };
+		5F40D616150582330080B065 /* SGRSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D615150582330080B065 /* SGRSearchController.m */; };
+		5F40D6191505824F0080B065 /* SGRSearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D6181505824F0080B065 /* SGRSearchResult.m */; };
+		5F40D61C150587E60080B065 /* SGRAppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D61B150587E60080B065 /* SGRAppController.m */; };
+		5F40D6221505A1300080B065 /* SGRGrepOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D6211505A1300080B065 /* SGRGrepOperation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,14 +25,22 @@
 		5F40D5FA15057F950080B065 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		5F40D5FB15057F950080B065 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		5F40D5FC15057F950080B065 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		5F40D5FF15057F950080B065 /* SimpleGrep-Info.plist */ = {isa = PBXFileReference; path = "SimpleGrep-Info.plist"; sourceTree = "<group>"; };
+		5F40D5FF15057F950080B065 /* SimpleGrep-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SimpleGrep-Info.plist"; sourceTree = "<group>"; };
 		5F40D60115057F950080B065 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5F40D60315057F950080B065 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		5F40D60515057F950080B065 /* SimpleGrep-Prefix.pch */ = {isa = PBXFileReference; path = "SimpleGrep-Prefix.pch"; sourceTree = "<group>"; };
+		5F40D60515057F950080B065 /* SimpleGrep-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SimpleGrep-Prefix.pch"; sourceTree = "<group>"; };
 		5F40D60715057F950080B065 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		5F40D60915057F950080B065 /* SGRAppDelegate.h */ = {isa = PBXFileReference; path = SGRAppDelegate.h; sourceTree = "<group>"; };
+		5F40D60915057F950080B065 /* SGRAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGRAppDelegate.h; sourceTree = "<group>"; };
 		5F40D60A15057F950080B065 /* SGRAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGRAppDelegate.m; sourceTree = "<group>"; };
 		5F40D60D15057F950080B065 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		5F40D614150582330080B065 /* SGRSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGRSearchController.h; sourceTree = "<group>"; };
+		5F40D615150582330080B065 /* SGRSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGRSearchController.m; sourceTree = "<group>"; };
+		5F40D6171505824F0080B065 /* SGRSearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGRSearchResult.h; sourceTree = "<group>"; };
+		5F40D6181505824F0080B065 /* SGRSearchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGRSearchResult.m; sourceTree = "<group>"; };
+		5F40D61A150587E60080B065 /* SGRAppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGRAppController.h; sourceTree = "<group>"; };
+		5F40D61B150587E60080B065 /* SGRAppController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGRAppController.m; sourceTree = "<group>"; };
+		5F40D6201505A12F0080B065 /* SGRGrepOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGRGrepOperation.h; sourceTree = "<group>"; };
+		5F40D6211505A1300080B065 /* SGRGrepOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGRGrepOperation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,10 +94,18 @@
 		5F40D5FD15057F950080B065 /* SimpleGrep */ = {
 			isa = PBXGroup;
 			children = (
+				5F40D614150582330080B065 /* SGRSearchController.h */,
+				5F40D615150582330080B065 /* SGRSearchController.m */,
+				5F40D6171505824F0080B065 /* SGRSearchResult.h */,
+				5F40D6181505824F0080B065 /* SGRSearchResult.m */,
 				5F40D60915057F950080B065 /* SGRAppDelegate.h */,
 				5F40D60A15057F950080B065 /* SGRAppDelegate.m */,
 				5F40D60C15057F950080B065 /* MainMenu.xib */,
 				5F40D5FE15057F950080B065 /* Supporting Files */,
+				5F40D61A150587E60080B065 /* SGRAppController.h */,
+				5F40D61B150587E60080B065 /* SGRAppController.m */,
+				5F40D6201505A12F0080B065 /* SGRGrepOperation.h */,
+				5F40D6211505A1300080B065 /* SGRGrepOperation.m */,
 			);
 			path = SimpleGrep;
 			sourceTree = "<group>";
@@ -168,6 +188,10 @@
 			files = (
 				5F40D60415057F950080B065 /* main.m in Sources */,
 				5F40D60B15057F950080B065 /* SGRAppDelegate.m in Sources */,
+				5F40D616150582330080B065 /* SGRSearchController.m in Sources */,
+				5F40D6191505824F0080B065 /* SGRSearchResult.m in Sources */,
+				5F40D61C150587E60080B065 /* SGRAppController.m in Sources */,
+				5F40D6221505A1300080B065 /* SGRGrepOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
