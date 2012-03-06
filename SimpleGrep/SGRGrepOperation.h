@@ -13,7 +13,7 @@
 @protocol SGRGrepOperationDelegate <NSObject>
 
 - (void)grepOperationCompleted:(SGRGrepOperation *)operation;
-- (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineStringValue:(NSString *)lineStringValue;
+- (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineStringValue;
 
 @end
 

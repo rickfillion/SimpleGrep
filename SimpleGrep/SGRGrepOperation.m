@@ -94,9 +94,9 @@
     [task setCurrentDirectoryPath:[self path]];
     NSArray *arguments = nil;
     if ([self isRecursive])
-        arguments = [NSArray arrayWithObjects:@"-R",[self searchString], [self path], nil];
+        arguments = [NSArray arrayWithObjects:@"-n", @"-R",[self searchString], [self path], nil];
     else
-        arguments = [NSArray arrayWithObjects:[self searchString], [self path], nil];
+        arguments = [NSArray arrayWithObjects:@"-n", [self searchString], [self path], nil];
     [task setArguments: arguments];
     [task setStandardOutput: outputPipe];
     [task setStandardError: outputPipe];
@@ -173,7 +173,7 @@
     NSString *divider = @":";
     NSArray *components = [line componentsSeparatedByString:divider];
     if ([components count] < 2) {
-        components = [NSArray arrayWithObjects:[components objectAtIndex:0], @"", nil];
+        components = [NSArray arrayWithObjects:[components objectAtIndex:0], @"", @"", nil];
     }
 
     [self performSelector:@selector(_reportResultToDelegate:) onThread:[NSThread mainThread] withObject:components waitUntilDone:YES];
@@ -195,10 +195,11 @@
     {
         path = [path substringFromIndex:[[self path] length]];
     }
-    NSString *lineString = [components objectAtIndex:1];
-    if (_delegate != nil && [_delegate respondsToSelector:@selector(grepOperation:foundResultWithPath:lineStringValue:)])
+    NSNumber *lineNumber = [NSNumber numberWithInt:[[components objectAtIndex:1] intValue]];
+    NSString *lineString = [components objectAtIndex:2];
+    if (_delegate != nil && [_delegate respondsToSelector:@selector(grepOperation:foundResultWithPath:lineNumber:lineStringValue:)])
     {
-        [_delegate grepOperation:self foundResultWithPath:path lineStringValue:lineString];
+        [_delegate grepOperation:self foundResultWithPath:path lineNumber:lineNumber lineStringValue:lineString];
     }
 }
 

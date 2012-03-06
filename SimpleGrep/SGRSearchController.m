@@ -79,12 +79,12 @@
 
 // Grep Operation Delelegate
 // Guaranteed to be called on main thread
-- (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineStringValue:(NSString *)lineStringValue
+- (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineStringValue
 {
     if (operation != _currentGrepOperation)
         return;
     
-    SGRSearchResult *result = [[[SGRSearchResult alloc] initWithPath:path lineNumber:[NSNumber numberWithInt:1] lineStringValue:lineStringValue] autorelease];
+    SGRSearchResult *result = [[[SGRSearchResult alloc] initWithPath:path lineNumber:lineNumber lineStringValue:lineStringValue] autorelease];
     [self _addSearchResult:result];
 }
 
