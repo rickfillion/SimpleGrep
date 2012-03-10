@@ -88,9 +88,14 @@
     // Create pipes and put them in the right mode
     NSPipe *outputPipe = [[NSPipe pipe] retain];
     
+    NSString *appleGrepPath = @"/usr/bin/grep";
+    NSString *nextGrepPath = @"/bin/grep";
+    
+    BOOL isApple = [[NSFileManager defaultManager] fileExistsAtPath:appleGrepPath];
+    
     // Just... do it.
     NSTask *task = [[NSTask alloc] init];
-    [task setLaunchPath:@"/usr/bin/grep"];
+    [task setLaunchPath:isApple ? appleGrepPath : nextGrepPath];
     [task setCurrentDirectoryPath:[self path]];
     NSArray *arguments = nil;
     if ([self isRecursive])
