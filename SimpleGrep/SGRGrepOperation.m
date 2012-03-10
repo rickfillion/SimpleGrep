@@ -124,7 +124,6 @@
     [task waitUntilExit];
     
     int status = [task terminationStatus];
-    NSLog(@"end status = %i", status);
     
     // Clean up
     [task release];
@@ -198,6 +197,12 @@
     {
         path = [path substringFromIndex:[[self path] length]];
     }
+    
+    // Check to see if final path actually exists
+    NSString *finalPath = [NSString stringWithFormat:@"%@/%@", [self path], path];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:finalPath] == NO)
+        return;
+    
     NSNumber *lineNumber = [NSNumber numberWithInt:[[components objectAtIndex:1] intValue]];
     NSString *lineString = [components objectAtIndex:2];
     if (_delegate != nil && [_delegate respondsToSelector:@selector(grepOperation:foundResultWithPath:lineNumber:lineStringValue:)])

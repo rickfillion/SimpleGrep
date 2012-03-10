@@ -33,6 +33,7 @@
 {
     [_currentGrepOperation release];
     [_currentSearchResults release];
+    [_lastResultsChangedNotificationPostedDate release];
     [super dealloc];
 }
 
@@ -125,9 +126,22 @@
         NSLog(@"-[SGRSearchController _addSearchResult:] cannot be called from the non-main thread");
         return;
     }
-    
+        
     [_currentSearchResults addObject:result];
-    [[NSNotificationCenter defaultCenter] postNotificationName:SGRSearchControllerUpdatedResultsNotification object:self];
+    
+    NSTimeInterval secondsBetweenNotifications = 0.5; 
+    BOOL shouldPostNotification = NO;
+    if (_lastResultsChangedNotificationPostedDate == nil)
+        shouldPostNotification = YES;
+    else if ([_lastResultsChangedNotificationPostedDate timeIntervalSinceNow] < -secondsBetweenNotifications)
+        shouldPostNotification = YES;
+
+    if (shouldPostNotification) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SGRSearchControllerUpdatedResultsNotification object:self];
+        [_lastResultsChangedNotificationPostedDate release];
+        _lastResultsChangedNotificationPostedDate = [[NSDate date] retain];
+    }
+    
 }
 
 @end

@@ -24,6 +24,7 @@ typedef int SGRSearchControllerStatus;
     int _status;
     NSMutableArray *_currentSearchResults;
     SGRGrepOperation *_currentGrepOperation;
+    NSDate *_lastResultsChangedNotificationPostedDate;
 }
 
 - (SGRSearchControllerStatus)status;

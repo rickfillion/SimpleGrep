@@ -10,6 +10,7 @@
 #import "SGRSearchController.h"
 #import "SGRSearchResult.h"
 
+#define SGRResultsTableColumnIcon @"SGRResultsTableColumnIcon"
 #define SGRResultsTableColumnPath @"SGRResultsTableColumnPath"
 #define SGRResultsTableColumnLineNumber @"SGRResultsTableColumnLineNumber"
 #define SGRResultsTableColumnLineStringValue @"SGRResultsTableColumnLineStringValue"
@@ -57,6 +58,7 @@
 {
     [self _setupTableViewColumns];
     [resultsTableView setDataSource:self];
+    [resultsTableView setDelegate:self];
     [resultsTableView reloadData];
     [self _updateSearchResultTextField];
     [self _updateSearchStatusTextField];
@@ -98,6 +100,7 @@
 - (void)searchControllerStatusChangedNotification:(NSNotification *)notification
 {
     [self _updateSearchStatusTextField];
+    [resultsTableView reloadData];
 }
 
 - (void)searchResultsUpdatedNotification:(NSNotification *)notification
@@ -142,21 +145,40 @@
         [resultsTableView removeTableColumn:[[resultsTableView tableColumns] objectAtIndex:0]];
     }
 
+    NSTableColumn *iconColumn = [[[NSTableColumn alloc] initWithIdentifier:SGRResultsTableColumnIcon] autorelease];
     NSTableColumn *pathColumn = [[[NSTableColumn alloc] initWithIdentifier:SGRResultsTableColumnPath] autorelease];
     NSTableColumn *lineNumberTableColumn = [[[NSTableColumn alloc] initWithIdentifier:SGRResultsTableColumnLineNumber] autorelease];
     NSTableColumn *lineStringValueTableColumn = [[[NSTableColumn alloc] initWithIdentifier:SGRResultsTableColumnLineStringValue] autorelease];
     
+    [iconColumn setWidth:18.0];
     [pathColumn setWidth:200.0];
     [lineNumberTableColumn setWidth:40.0];
     [lineStringValueTableColumn setWidth:230.0];
     
+    [[iconColumn headerCell] setStringValue:@""];
     [[pathColumn headerCell] setStringValue:@"Path"];
     [[lineNumberTableColumn headerCell] setStringValue:@"Line"];
-    [[lineStringValueTableColumn headerCell] setStringValue:@"Sample"];    
+    [[lineStringValueTableColumn headerCell] setStringValue:@"Sample"];
     
+    NSCell *imageCell = [[[NSCell alloc] initImageCell:[NSImage imageNamed:@"NSApplication"]] autorelease];
+    [iconColumn setDataCell:imageCell];
+    
+    [resultsTableView addTableColumn:iconColumn];
     [resultsTableView addTableColumn:pathColumn];
     [resultsTableView addTableColumn:lineNumberTableColumn];
     [resultsTableView addTableColumn:lineStringValueTableColumn];    
+}
+
+// NSTableViewDelegate
+
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+{
+    if ([[aTableColumn identifier] isEqualToString:SGRResultsTableColumnIcon]) {
+        NSString *path = [aCell objectValue];
+        NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
+        [icon setSize:NSMakeSize(16, 16)];
+        [aCell setImage:icon];
+    }
 }
 
 // NSTableViewDataSource
@@ -171,7 +193,11 @@
     SGRSearchResult *result = [_results objectAtIndex:rowIndex];
     id objectValue = nil;
     
-    if ([[aTableColumn identifier] isEqualToString:SGRResultsTableColumnPath])
+    if ([[aTableColumn identifier] isEqualToString:SGRResultsTableColumnIcon]) {
+        NSString *path = [NSString stringWithFormat:@"%@/%@", _path, [result path]];
+        objectValue = path; 
+    }
+    else if ([[aTableColumn identifier] isEqualToString:SGRResultsTableColumnPath])
         objectValue = [result path];
     else if ([[aTableColumn identifier] isEqualToString:SGRResultsTableColumnLineNumber])
         objectValue = [result lineNumber];
