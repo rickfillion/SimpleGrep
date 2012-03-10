@@ -1,0 +1,13 @@
+"FirstResponder" = {ACTIONS = {}; OUTLETS = {}; SUPERCLASS = NSObject; };
+"SGRAppController" = {
+    ACTIONS = {"chooseFolder:" = id; "search:" = id; "toggleRecursive:" = id; }; 
+    OUTLETS = {
+        folderPathTextField = id; 
+        recursiveCheckboxButton = id; 
+        resultsTableView = id; 
+        resultsTextField = id; 
+        searchTextField = id; 
+        statusTextField = id; 
+    }; 
+    SUPERCLASS = NSObject; 
+};
