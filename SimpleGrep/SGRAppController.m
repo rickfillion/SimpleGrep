@@ -29,7 +29,7 @@
 {
     if (self = [super init])
     {
-        _path = @"/Users/rfillion/Projects/BlackPixel/apps/NetNewsWire/nnw";
+        _path = NSHomeDirectory();
         [_path retain];
         _searchController = [[SGRSearchController alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -85,7 +85,7 @@
         return;
     
     [_path release];
-    _path = [[openPanel filename] retain];
+    _path = [[[openPanel filenames] objectAtIndex:0] retain];
     [self _updateFolderPathTextField];
 }
 - (IBAction)toggleRecursive:(id)sender

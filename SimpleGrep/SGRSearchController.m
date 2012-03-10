@@ -64,12 +64,12 @@
         [_currentGrepOperation cancel];
         [_currentGrepOperation release];
         _currentGrepOperation = nil;
-        [self _clearSearchResults];
         [self _changeStatus:SGRSearchControllerStatusIdle];
     }
     
+    [self _clearSearchResults];
+
     [self _changeStatus:SGRSearchControllerStatusSearching];
-    
     
     SGRGrepOperation *operation = [[SGRGrepOperation alloc] initWithPath:path searchString:searchString recursive:recursively];
     [operation setDelegate:self];
@@ -81,8 +81,10 @@
 // Guaranteed to be called on main thread
 - (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineStringValue
 {
-    if (operation != _currentGrepOperation)
+    if (operation != _currentGrepOperation) {
+        [operation cancel];
         return;
+    }
     
     SGRSearchResult *result = [[[SGRSearchResult alloc] initWithPath:path lineNumber:lineNumber lineStringValue:lineStringValue] autorelease];
     [self _addSearchResult:result];
@@ -90,9 +92,9 @@
 
 - (void)grepOperationCompleted:(SGRGrepOperation *)operation
 {
-    [self _changeStatus:SGRSearchControllerStatusIdle];
     [_currentGrepOperation release];
     _currentGrepOperation = nil;
+    [self _changeStatus:SGRSearchControllerStatusIdle];
 }
 
 // Private

@@ -106,9 +106,7 @@
 	[task setEnvironment:environment];
     
     [task launch];
-    
-    [[outputPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
-    
+        
     NSUInteger length = 1;
     NSFileHandle *readHandle = [outputPipe fileHandleForReading];
     NSData *data = [readHandle readDataOfLength:length];
@@ -172,7 +170,7 @@
 {
     NSString *divider = @":";
     NSArray *components = [line componentsSeparatedByString:divider];
-    if ([components count] < 2) {
+    if ([components count] != 4) {
         components = [NSArray arrayWithObjects:[components objectAtIndex:0], @"", @"", nil];
     }
 

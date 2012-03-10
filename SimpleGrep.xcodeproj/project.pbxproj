@@ -11,7 +11,6 @@
 		5F40D60215057F950080B065 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5F40D60015057F950080B065 /* InfoPlist.strings */; };
 		5F40D60415057F950080B065 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D60315057F950080B065 /* main.m */; };
 		5F40D60815057F950080B065 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 5F40D60615057F950080B065 /* Credits.rtf */; };
-		5F40D60B15057F950080B065 /* SGRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D60A15057F950080B065 /* SGRAppDelegate.m */; };
 		5F40D60E15057F950080B065 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F40D60C15057F950080B065 /* MainMenu.xib */; };
 		5F40D616150582330080B065 /* SGRSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D615150582330080B065 /* SGRSearchController.m */; };
 		5F40D6191505824F0080B065 /* SGRSearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F40D6181505824F0080B065 /* SGRSearchResult.m */; };
@@ -30,8 +29,6 @@
 		5F40D60315057F950080B065 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5F40D60515057F950080B065 /* SimpleGrep-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SimpleGrep-Prefix.pch"; sourceTree = "<group>"; };
 		5F40D60715057F950080B065 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		5F40D60915057F950080B065 /* SGRAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGRAppDelegate.h; sourceTree = "<group>"; };
-		5F40D60A15057F950080B065 /* SGRAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGRAppDelegate.m; sourceTree = "<group>"; };
 		5F40D60D15057F950080B065 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		5F40D614150582330080B065 /* SGRSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGRSearchController.h; sourceTree = "<group>"; };
 		5F40D615150582330080B065 /* SGRSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGRSearchController.m; sourceTree = "<group>"; };
@@ -98,8 +95,6 @@
 				5F40D615150582330080B065 /* SGRSearchController.m */,
 				5F40D6171505824F0080B065 /* SGRSearchResult.h */,
 				5F40D6181505824F0080B065 /* SGRSearchResult.m */,
-				5F40D60915057F950080B065 /* SGRAppDelegate.h */,
-				5F40D60A15057F950080B065 /* SGRAppDelegate.m */,
 				5F40D60C15057F950080B065 /* MainMenu.xib */,
 				5F40D5FE15057F950080B065 /* Supporting Files */,
 				5F40D61A150587E60080B065 /* SGRAppController.h */,
@@ -187,7 +182,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F40D60415057F950080B065 /* main.m in Sources */,
-				5F40D60B15057F950080B065 /* SGRAppDelegate.m in Sources */,
 				5F40D616150582330080B065 /* SGRSearchController.m in Sources */,
 				5F40D6191505824F0080B065 /* SGRSearchResult.m in Sources */,
 				5F40D61C150587E60080B065 /* SGRAppController.m in Sources */,
@@ -311,6 +305,7 @@
 				5F40D61315057F950080B065 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
