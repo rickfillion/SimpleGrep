@@ -6,7 +6,8 @@
 //  Copyright (c) 2012 Centrix.ca. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 int main(int argc, char *argv[])
 {
