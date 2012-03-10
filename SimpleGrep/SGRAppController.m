@@ -21,6 +21,7 @@
 - (void)_updateSearchStatusTextField;
 - (void)_updateFolderPathTextField;
 - (void)_setupTableViewColumns;
+- (void)_tableViewDoubleClick;
 
 @end
 
@@ -59,6 +60,8 @@
     [self _setupTableViewColumns];
     [resultsTableView setDataSource:self];
     [resultsTableView setDelegate:self];
+    [resultsTableView setTarget:self];
+    [resultsTableView setDoubleAction:@selector(_tableViewDoubleClick:)];
     [resultsTableView reloadData];
     [self _updateSearchResultTextField];
     [self _updateSearchStatusTextField];
@@ -167,6 +170,17 @@
     [resultsTableView addTableColumn:pathColumn];
     [resultsTableView addTableColumn:lineNumberTableColumn];
     [resultsTableView addTableColumn:lineStringValueTableColumn];    
+}
+
+- (void)_tableViewDoubleClick:(id)sender
+{
+    long clickedRow = [resultsTableView clickedRow];
+    if (clickedRow > [_results count])
+        return;
+    
+    SGRSearchResult *result = [_results objectAtIndex:clickedRow];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", _path, [result path]];
+    [[NSWorkspace sharedWorkspace] openFile:path];
 }
 
 // NSTableViewDelegate

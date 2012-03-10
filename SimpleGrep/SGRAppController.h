@@ -10,7 +10,7 @@
 
 @class SGRSearchController;
 
-@interface SGRAppController : NSObject <NSTableViewDataSource>
+@interface SGRAppController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
 {
     IBOutlet NSTextField *searchTextField;
     IBOutlet NSTextField *folderPathTextField;
