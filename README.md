@@ -9,11 +9,6 @@ SimpleGrep is a simple wrapper around the grep UNIX utility, allowing you to sea
 
 Why not?
 
-### Contents ###
-
-* Shared/ : The shared source code
-
-* Mac/ : The 
 
 ### Known Issues ###
 
