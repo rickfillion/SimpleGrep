@@ -7,10 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 @class SGRSearchController;
 
-@interface SGRAppController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+// IBOutlet didn't exist yet
+#ifndef IBOutlet
+#define IBOutlet 
+#endif
+
+@interface SGRAppController : NSObject
 {
     IBOutlet NSTextField *searchTextField;
     IBOutlet NSTextField *folderPathTextField;

@@ -24,14 +24,18 @@
 {
     if (self = [super init])
     {
+        NSConnection *distributedConnection = [NSConnection defaultConnection];
+        [distributedConnection setRootObject:self];
+        [distributedConnection registerName:@"searchController"];
         _currentSearchResults = [[NSMutableArray alloc] initWithCapacity:100];
+        _grepOperations = [[NSMutableDictionary dictionary] retain];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [_currentGrepOperation release];
+    [_grepOperations release];
     [_currentSearchResults release];
     [_lastResultsChangedNotificationPostedDate release];
     [super dealloc];
@@ -58,44 +62,47 @@
 
 - (void)searchFor:(NSString *)searchString inFolder:(NSString *)path recursively:(BOOL)recursively
 {
-    if (_status != SGRSearchControllerStatusIdle)
-    {
-        // Cancel whatever we're currently doing
-        
-        [_currentGrepOperation cancel];
-        [_currentGrepOperation release];
-        _currentGrepOperation = nil;
-        [self _changeStatus:SGRSearchControllerStatusIdle];
-    }
-    
+    SGRGrepOperation *operation = nil;
+    NSString *operationKey = nil;
+
+    _currentOperationIdentifier++;
     [self _clearSearchResults];
 
     [self _changeStatus:SGRSearchControllerStatusSearching];
     
-    SGRGrepOperation *operation = [[SGRGrepOperation alloc] initWithPath:path searchString:searchString recursive:recursively];
-    [operation setDelegate:self];
-    _currentGrepOperation = operation;
-    [_currentGrepOperation start];
+    operation = [[SGRGrepOperation alloc] initWithPath:path searchString:searchString recursive:recursively];
+    [operation setIdentifier: _currentOperationIdentifier];
+    operationKey = [NSString stringWithFormat:@"%i", [operation identifier]];
+    [_grepOperations setObject:operation forKey:operationKey]; 
+    [operation start];
 }
 
 // Grep Operation Delelegate
-// Guaranteed to be called on main thread
+// Called via Distributed Objects
 - (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineStringValue
 {
-    if (operation != _currentGrepOperation) {
+    SGRSearchResult *result = nil;
+
+    if ([operation identifier] != _currentOperationIdentifier) {
         [operation cancel];
         return;
     }
     
-    SGRSearchResult *result = [[[SGRSearchResult alloc] initWithPath:path lineNumber:lineNumber lineStringValue:lineStringValue] autorelease];
+    result = [[[SGRSearchResult alloc] initWithPath:path lineNumber:lineNumber lineStringValue:lineStringValue] autorelease];
     [self _addSearchResult:result];
 }
 
 - (void)grepOperationCompleted:(SGRGrepOperation *)operation
 {
-    [_currentGrepOperation release];
-    _currentGrepOperation = nil;
-    [self _changeStatus:SGRSearchControllerStatusIdle];
+    NSString *operationKey = nil;
+    NSString *operationToRelease = nil;
+
+    if ([operation identifier] == _currentOperationIdentifier)
+    	[self _changeStatus:SGRSearchControllerStatusIdle];
+
+    operationKey = [NSString stringWithFormat:@"%i", [operation identifier]];
+    operationToRelease = [_grepOperations objectForKey:operationKey];
+    [operationToRelease autorelease];
 }
 
 // Private
@@ -108,29 +115,18 @@
 
 
 - (void)_clearSearchResults
-{
-    if ([[NSThread currentThread] isMainThread] == NO) 
-    {
-        NSLog(@"-[SGRSearchController _clearSearchResults] cannot be called from the non-main thread");
-        return;
-    }
-    
+{   
     [_currentSearchResults removeAllObjects];
     [[NSNotificationCenter defaultCenter] postNotificationName:SGRSearchControllerUpdatedResultsNotification object:self];
 }
 
 - (void)_addSearchResult:(SGRSearchResult *)result
 {
-    if ([[NSThread currentThread] isMainThread] == NO) 
-    {
-        NSLog(@"-[SGRSearchController _addSearchResult:] cannot be called from the non-main thread");
-        return;
-    }
+    NSTimeInterval secondsBetweenNotifications = 0.5;
+    BOOL shouldPostNotification = NO;
         
     [_currentSearchResults addObject:result];
     
-    NSTimeInterval secondsBetweenNotifications = 0.5; 
-    BOOL shouldPostNotification = NO;
     if (_lastResultsChangedNotificationPostedDate == nil)
         shouldPostNotification = YES;
     else if ([_lastResultsChangedNotificationPostedDate timeIntervalSinceNow] < -secondsBetweenNotifications)

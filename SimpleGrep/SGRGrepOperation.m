@@ -11,10 +11,11 @@
 @interface SGRGrepOperation (Private)
 
 - (void)_start;
-- (void)_handleData:(NSData *)data;
-- (void)_processLine:(NSString *)line;
-- (void)_reportResultToDelegate:(NSArray *)components;
-- (void)_reportCompletedToDelegate;
+- (void)_grepSubPath:(NSString *)subpath;
+- (void)_handleData:(NSData *)data forSubPath:(NSString *)subpath;
+- (void)_processLine:(NSString *)line forSubPath:(NSString *)subpath;
+- (void)_reportResultToControllerWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineString;
+- (void)_reportCompletedToController;
 
 @end
 
@@ -62,16 +63,6 @@
     return _recursive;
 }
 
-- (id)delegate
-{
-    return _delegate;
-}
-
-- (void)setDelegate:(id)delegate
-{
-    _delegate = delegate;
-}
-
 - (void)start
 {
     if (_started == YES)
@@ -81,57 +72,84 @@
     [NSThread detachNewThreadSelector:@selector(_start) toTarget:self withObject:nil];
 }
 
-- (void)_start;
-{    
+- (void)_grepSubPath:(NSString *)subpath;
+{
+    int length = 1;
+    int status;
+
+    NSArray *arguments = nil;
+    NSMutableDictionary *environment = nil;
+    NSFileHandle *readHandle = nil;
+    NSData *data = nil;
+    NSString *finalPath = nil;
+    NSTask *task = nil;
+
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
+
     // Create pipes and put them in the right mode
     NSPipe *outputPipe = [[NSPipe pipe] retain];
-    
+
     NSString *appleGrepPath = @"/usr/bin/grep";
     NSString *nextGrepPath = @"/bin/grep";
-    
+
     BOOL isApple = [[NSFileManager defaultManager] fileExistsAtPath:appleGrepPath];
-    
+
+    finalPath = [NSString stringWithFormat:@"%@/%@", [self path], subpath];
+    //NSLog(@"grep path: %@", finalPath);
     // Just... do it.
-    NSTask *task = [[NSTask alloc] init];
+    task = [[NSTask alloc] init];
     [task setLaunchPath:isApple ? appleGrepPath : nextGrepPath];
-    [task setCurrentDirectoryPath:[self path]];
-    NSArray *arguments = nil;
-    if ([self isRecursive])
-        arguments = [NSArray arrayWithObjects:@"-n", @"-R",[self searchString], [self path], nil];
-    else
-        arguments = [NSArray arrayWithObjects:@"-n", [self searchString], [self path], nil];
+    [task setCurrentDirectoryPath:@"/"];
+    arguments = [NSArray arrayWithObjects:@"-n", [self searchString], finalPath, nil];
     [task setArguments: arguments];
     [task setStandardOutput: outputPipe];
     [task setStandardError: outputPipe];
-    NSMutableDictionary* environment = [NSMutableDictionary dictionaryWithDictionary: [[NSProcessInfo processInfo] environment]];
-	// set up for unbuffered I/O
-	[environment setObject:@"YES" forKey:@"NSUnbufferedIO"];
-	[task setEnvironment:environment];
-    
+    environment = [NSMutableDictionary dictionaryWithDictionary: [[NSProcessInfo processInfo] environment]];
+    // set up for unbuffered I/O
+    [environment setObject:@"YES" forKey:@"NSUnbufferedIO"];
+    [task setEnvironment:environment];
+
     [task launch];
-        
-    NSUInteger length = 1;
-    NSFileHandle *readHandle = [outputPipe fileHandleForReading];
-    NSData *data = [readHandle readDataOfLength:length];
+
+    readHandle = [outputPipe fileHandleForReading];
+    data = [readHandle readDataOfLength:length];
     while ([data length]>0)
     {
-        [self _handleData:data];
+        [self _handleData:data forSubPath:subpath];
         data = [readHandle readDataOfLength:length];
     }
-    
+
     [task waitUntilExit];
-    
-    int status = [task terminationStatus];
-    
+
+    status = [task terminationStatus];
+    //NSLog(@"task termination status = %i", status);
+
     // Clean up
     [task release];
     [outputPipe release];
+
+    [pool release];
+}
+
+- (void)_start;
+{
+    int subpathIndex = 0;
+    NSArray *subpaths = nil;
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+    if ([self isRecursive])
+        subpaths = [[NSFileManager defaultManager] subpathsAtPath:[self path]];
+    else 
+        subpaths = [[NSFileManager defaultManager] directoryContentsAtPath:[self path]];
+
+    for (subpathIndex = 0; subpathIndex < [subpaths count]; subpathIndex++)
+    {
+        [self _grepSubPath:[subpaths objectAtIndex:subpathIndex]];
+    }
     
-    [self performSelector:@selector(_reportCompletedToDelegate) onThread:[NSThread mainThread] withObject:nil waitUntilDone:YES];
+    [self _reportCompletedToController];
     
-    [pool drain];
+    [pool release];
 }
 
 - (BOOL)isCanceled
@@ -141,17 +159,27 @@
 
 - (void)cancel
 {
+    NSLog(@"canceling grep operation");
     _canceled = YES;
+}
+
+- (int)identifier {
+    return _identifier;
+}
+
+- (void)setIdentifier:(int)uniqueIdentifier {
+    _identifier = uniqueIdentifier;
 }
 
 // Private
 
-- (void)_handleData:(NSData *)data
+- (void)_handleData:(NSData *)data forSubPath:(NSString *)subpath
 {
     BOOL foundSplit = NO;
     char byte;
+    int i;
     [data getBytes:&byte length:1];
-    for (int i = 0; i < [_lineSplitValues count]; i++)
+    for (i = 0; i < [_lineSplitValues count]; i++)
     {
         NSNumber *lineSplitValue = [_lineSplitValues objectAtIndex:i];
         if ([lineSplitValue charValue] == byte)
@@ -161,8 +189,8 @@
     if (foundSplit)
     {
         // create a string with the current data
-        NSString *lineBufferString = [[[NSString alloc] initWithBytes:[_lineBuffer bytes] length:[_lineBuffer length] encoding:NSASCIIStringEncoding] autorelease];
-        [self _processLine:lineBufferString];
+        NSString *lineBufferString = [[[NSString alloc] initWithCString:[_lineBuffer bytes] length:[_lineBuffer length]] autorelease];
+        [self _processLine:lineBufferString forSubPath:subpath];
         [_lineBuffer setData:[NSData data]];
     }
     else {
@@ -170,62 +198,56 @@
         [_lineBuffer appendData:data];
     }
 }
-- (void)_processLine:(NSString *)line
+- (void)_processLine:(NSString *)line forSubPath:(NSString *)subpath
 {
     NSString *divider = @":";
     NSArray *components = [line componentsSeparatedByString:divider];
-    if ([components count] != 4) {
-        components = [NSArray arrayWithObjects:[components objectAtIndex:0], @"", @"", nil];
+    NSNumber *lineNumber = nil;
+    NSString *lineString = nil;
+
+    if ([components count] != 2) {
+        return;
     }
 
-    [self performSelector:@selector(_reportResultToDelegate:) onThread:[NSThread mainThread] withObject:components waitUntilDone:YES];
+    lineNumber = [NSNumber numberWithInt:[[components objectAtIndex:0] intValue]];
+    lineString = [components objectAtIndex:1];
+    [self _reportResultToControllerWithPath:subpath lineNumber:lineNumber lineStringValue:lineString];
 }
 
-- (void)_reportResultToDelegate:(NSArray *)components
+- (void)_reportResultToControllerWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineString
 {
-    if ([[NSThread currentThread] isMainThread] == NO)
-    {
-        NSLog(@"-[SGRGrepOperation _reportResultToDelegate:] must be called on the main thread");
+    NSString *finalPath = nil;
+    id searchControllerProxy = nil;
+    
+    if ([self isCanceled]) {
+        NSLog(@"grep operation canceled, returning.");
         return;
     }
-    
-    if ([self isCanceled])
-        return;
-    
-    NSString *path = [components objectAtIndex:0];
-    if ([path length] > [[self path] length])
-    {
-        path = [path substringFromIndex:[[self path] length]];
-    }
-    
+
+    //NSLog(@"processing result for path %@",  path);
+
     // Check to see if final path actually exists
-    NSString *finalPath = [NSString stringWithFormat:@"%@/%@", [self path], path];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:finalPath] == NO)
+    finalPath = [NSString stringWithFormat:@"%@/%@", [self path], path];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:finalPath] == NO) {
+        NSLog(@"file doesn't exist at path : %@", finalPath);
         return;
-    
-    NSNumber *lineNumber = [NSNumber numberWithInt:[[components objectAtIndex:1] intValue]];
-    NSString *lineString = [components objectAtIndex:2];
-    if (_delegate != nil && [_delegate respondsToSelector:@selector(grepOperation:foundResultWithPath:lineNumber:lineStringValue:)])
-    {
-        [_delegate grepOperation:self foundResultWithPath:path lineNumber:lineNumber lineStringValue:lineString];
     }
+    
+    searchControllerProxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"searchController" host:@"*"];
+    [searchControllerProxy setProtocolForProxy:@protocol(SGRGrepOperationController)];
+    [searchControllerProxy grepOperation:self foundResultWithPath:path lineNumber:lineNumber lineStringValue:lineString];
 }
 
-- (void)_reportCompletedToDelegate
+- (void)_reportCompletedToController
 {
-    if ([[NSThread currentThread] isMainThread] == NO)
-    {
-        NSLog(@"-[SGRGrepOperation _reportCompletedToDelegate:] must be called on the main thread");
-        return;
-    }
-    
+    id searchControllerProxy = nil;
+
     if ([self isCanceled])
-        return;
+        return; 
     
-    if (_delegate != nil && [_delegate respondsToSelector:@selector(grepOperationCompleted:)])
-    {
-        [_delegate grepOperationCompleted:self];
-    }
+    searchControllerProxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"searchController" host:@"*"];
+    [searchControllerProxy setProtocolForProxy:@protocol(SGRGrepOperationController)];
+    [searchControllerProxy grepOperationCompleted: self];
 }
 
 @end

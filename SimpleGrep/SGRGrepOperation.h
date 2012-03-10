@@ -10,7 +10,7 @@
 
 @class SGRGrepOperation;
 
-@protocol SGRGrepOperationDelegate <NSObject>
+@protocol SGRGrepOperationController <NSObject>
 
 - (void)grepOperationCompleted:(SGRGrepOperation *)operation;
 - (void)grepOperation:(SGRGrepOperation *)operation foundResultWithPath:(NSString *)path lineNumber:(NSNumber *)lineNumber lineStringValue:(NSString *)lineStringValue;
@@ -25,7 +25,7 @@
     BOOL _canceled;
     BOOL _recursive;
     BOOL _started;
-    id<SGRGrepOperationDelegate> _delegate;
+    int _identifier;
     
     // NSTask related
     NSTask *_grepTask;
@@ -37,10 +37,10 @@
 - (NSString *)searchString;
 - (NSString *)path;
 - (BOOL)isRecursive;
-- (id)delegate;
-- (void)setDelegate:(id)delegate;
 - (void)start;
 - (BOOL)isCanceled;
 - (void)cancel;
+- (int)identifier;
+- (void)setIdentifier:(int)uniqueIdentifier;
 
 @end

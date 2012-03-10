@@ -28,6 +28,12 @@
     [_lineStringValue release];
     [super dealloc];
 }
+
+- (id)copyWithZone:(NSZone*)zone
+{
+    return [self retain];
+}
+
 - (NSString *)path 
 {
     return _path;
