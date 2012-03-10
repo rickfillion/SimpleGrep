@@ -204,7 +204,8 @@
     NSArray *components = [line componentsSeparatedByString:divider];
     NSNumber *lineNumber = nil;
     NSString *lineString = nil;
-
+    
+    //NSLog(@"_processLine: %@", line);
     if ([components count] != 2) {
         return;
     }
@@ -233,7 +234,7 @@
         return;
     }
     
-    searchControllerProxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"searchController" host:@"*"];
+    searchControllerProxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"searchController" host:@""];
     [searchControllerProxy setProtocolForProxy:@protocol(SGRGrepOperationController)];
     [searchControllerProxy grepOperation:self foundResultWithPath:path lineNumber:lineNumber lineStringValue:lineString];
 }
@@ -245,7 +246,7 @@
     if ([self isCanceled])
         return; 
     
-    searchControllerProxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"searchController" host:@"*"];
+    searchControllerProxy = [NSConnection rootProxyForConnectionWithRegisteredName:@"searchController" host:@""];
     [searchControllerProxy setProtocolForProxy:@protocol(SGRGrepOperationController)];
     [searchControllerProxy grepOperationCompleted: self];
 }
