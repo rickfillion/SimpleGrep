@@ -145,6 +145,8 @@
     for (subpathIndex = 0; subpathIndex < [subpaths count]; subpathIndex++)
     {
         [self _grepSubPath:[subpaths objectAtIndex:subpathIndex]];
+        if ([self isCanceled])
+            break;
     }
     
     [self _reportCompletedToController];
@@ -159,7 +161,6 @@
 
 - (void)cancel
 {
-    NSLog(@"canceling grep operation");
     _canceled = YES;
 }
 

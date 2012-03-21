@@ -64,7 +64,7 @@
 {
     SGRGrepOperation *operation = nil;
     NSString *operationKey = nil;
-
+    
     _currentOperationIdentifier++;
     [self _clearSearchResults];
 
@@ -102,6 +102,7 @@
 
     operationKey = [NSString stringWithFormat:@"%i", [operation identifier]];
     operationToRelease = [_grepOperations objectForKey:operationKey];
+    [_grepOperations removeObjectForKey:operationKey];
     [operationToRelease autorelease];
 }
 
